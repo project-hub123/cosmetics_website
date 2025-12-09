@@ -51,33 +51,44 @@ def index():
 def search():
     form = SearchForm()
 
-    if form.validate_on_submit():
+    # 1) Если запрос пришёл методом POST (форма на главной)
+    if request.method == "POST" and form.validate_on_submit():
         query = form.query.data.strip()
 
-        # поиск в статьях + новостях
-        articles = Article.query.filter(
-            or_(
-                Article.title.ilike(f"%{query}%"),
-                Article.content.ilike(f"%{query}%")
-            )
-        ).all()
+        if not query:
+            flash("Введите поисковый запрос.", "warning")
+            return redirect(url_for("main.index"))
 
-        news = News.query.filter(
-            or_(
-                News.title.ilike(f"%{query}%"),
-                News.content.ilike(f"%{query}%")
-            )
-        ).all()
+    # 2) Если пользователь перешёл методом GET
+    elif request.method == "GET":
+        query = request.args.get("query", "").strip()
 
-        return render_template(
-            "search_results.html",
-            query=query,
-            articles=articles,
-            news=news
+        if not query:
+            return redirect(url_for("main.index"))
+    else:
+        return redirect(url_for("main.index"))
+
+    # Выполняем поиск
+    articles = Article.query.filter(
+        or_(
+            Article.title.ilike(f"%{query}%"),
+            Article.content.ilike(f"%{query}%")
         )
+    ).all()
 
-    return redirect(url_for("main.index"))
+    news = News.query.filter(
+        or_(
+            News.title.ilike(f"%{query}%"),
+            News.content.ilike(f"%{query}%")
+        )
+    ).all()
 
+    return render_template(
+        "search_results.html",
+        query=query,
+        articles=articles,
+        news=news
+    )
 
 # ============================================================
 #                    КАРТА САЙТА (sitemap)

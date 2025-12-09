@@ -21,6 +21,7 @@
 <header>
     <div class="container">
 
+        <!-- Верхняя панель -->
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div class="logo">
                 <a href="{{ url_for('main.index') }}" style="text-decoration:none;">
@@ -40,7 +41,9 @@
             </div>
         </div>
 
-        <nav>
+        <!-- Навигация -->
+        <nav style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
+
             <a href="{{ url_for('main.index') }}">Главная</a>
             <a href="{{ url_for('articles.categories') }}">Статьи</a>
             <a href="{{ url_for('news.news_list') }}">Новости</a>
@@ -49,7 +52,7 @@
 
             {% if current_user.is_authenticated %}
                 <a href="{{ url_for('auth.logout') }}">Выход</a>
-                <span style="margin-left:10px; font-weight:bold;">{{ current_user.username }}</span>
+                <span style="font-weight:bold;">{{ current_user.username }}</span>
 
                 {% if current_user.role in ["employee", "admin"] %}
                     <a href="{{ url_for('admin.users_list') }}">Админ-панель</a>
@@ -58,12 +61,21 @@
                 <a href="{{ url_for('auth.login') }}">Вход</a>
                 <a href="{{ url_for('auth.register') }}">Регистрация</a>
             {% endif %}
+
+            <!-- ======= ПОИСК — НА ВСЕХ СТРАНИЦАХ ======= -->
+            <form action="{{ url_for('main.search') }}" method="POST" style="display:flex; gap:5px; align-items:center;">
+                {{ SearchForm().hidden_tag() }}
+                {{ SearchForm().query(size=20, placeholder="Поиск по сайту", class="search-input") }}
+                <button type="submit" class="btn">Найти</button>
+            </form>
+
         </nav>
 
     </div>
 </header>
 
 
+<!-- FLASH-СООБЩЕНИЯ -->
 <div class="container">
     {% with messages = get_flashed_messages(with_categories=True) %}
         {% if messages %}
@@ -77,11 +89,13 @@
 </div>
 
 
+<!-- ОСНОВНОЙ КОНТЕНТ -->
 <div class="container">
     {% block content %}{% endblock %}
 </div>
 
 
+<!-- ПОДВАЛ -->
 <footer>
     <div class="container">
         © {{ current_year }} Косметическая компания • Все права защищены

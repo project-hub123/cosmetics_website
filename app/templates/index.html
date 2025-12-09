@@ -5,6 +5,16 @@
 {% block content %}
 
 <!-- =====================================================
+     ПОИСК НА ГЛАВНОЙ
+====================================================== -->
+<form action="{{ url_for('main.search') }}" method="POST" style="margin-bottom:25px; display:flex; gap:10px;">
+    {{ search_form.hidden_tag() }}
+    {{ search_form.query(class="search-input", placeholder="Поиск по сайту...") }}
+    <button type="submit" class="btn">Найти</button>
+</form>
+
+
+<!-- =====================================================
      БАННЕРЫ
 ====================================================== -->
 {% if banners %}
@@ -86,6 +96,5 @@
 {% else %}
     <p>Пока нет новостей.</p>
 {% endif %}
-
 
 {% endblock %}
