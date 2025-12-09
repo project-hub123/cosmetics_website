@@ -1,0 +1,88 @@
+{% extends style_mode == "lowvision" and "base_lowvision.html" or "base.html" %}
+
+{% block title %}Управление пользователями{% endblock %}
+
+{% block content %}
+
+<h1>Управление пользователями</h1>
+
+<p style="margin-top:10px; font-size:18px;">
+    Здесь вы можете просматривать учетные записи, менять роли пользователей или удалять их.
+</p>
+
+<!-- Кнопка создания нового пользователя -->
+<div style="margin-top:20px; margin-bottom:25px;">
+    <a class="btn" href="{{ url_for('admin.create_user') }}">Создать пользователя</a>
+</div>
+
+<!-- =====================================================
+     СПИСОК ПОЛЬЗОВАТЕЛЕЙ
+====================================================== -->
+{% if users %}
+    <table style="width:100%; border-collapse:collapse; margin-top:10px; font-size:18px;">
+        <tr style="background:#eee;">
+            <th style="padding:10px; border:1px solid #ccc;">ID</th>
+            <th style="padding:10px; border:1px solid #ccc;">Логин</th>
+            <th style="padding:10px; border:1px solid #ccc;">Email</th>
+            <th style="padding:10px; border:1px solid #ccc;">Роль</th>
+            <th style="padding:10px; border:1px solid #ccc;">Действия</th>
+        </tr>
+
+        {% for user in users %}
+
+        <tr>
+            <td style="padding:10px; border:1px solid #ccc;">{{ user.id }}</td>
+            <td style="padding:10px; border:1px solid #ccc;">{{ user.username }}</td>
+            <td style="padding:10px; border:1px solid #ccc;">{{ user.email }}</td>
+
+            <!-- РОЛЬ -->
+            <td style="padding:10px; border:1px solid #ccc;">
+
+                <!-- Если это текущий пользователь — роль менять нельзя -->
+                {% if user.id == current_user.id %}
+                    <strong>{{ user.role }}</strong>
+
+                {% else %}
+                    <form action="{{ url_for('admin.change_role', user_id=user.id) }}"
+                          method="POST"
+                          style="display:flex; gap:10px; align-items:center;">
+
+                        <select name="role" style="padding:5px; font-size:16px;">
+                            <option value="user"     {% if user.role == 'user' %}selected{% endif %}>Пользователь</option>
+                            <option value="employee" {% if user.role == 'employee' %}selected{% endif %}>Сотрудник</option>
+                            <option value="admin"    {% if user.role == 'admin' %}selected{% endif %}>Администратор</option>
+                        </select>
+
+                        <button class="btn" style="font-size:14px;">Изменить</button>
+                    </form>
+                {% endif %}
+            </td>
+
+            <!-- КНОПКА УДАЛЕНИЯ -->
+            <td style="padding:10px; border:1px solid #ccc;">
+
+                {% if user.id != current_user.id %}
+                    <form action="{{ url_for('admin.delete_user', user_id=user.id) }}"
+                          method="POST"
+                          onsubmit="return confirm('Удалить пользователя?');">
+
+                        <button class="btn" style="background:#cc3333;">
+                            Удалить
+                        </button>
+                    </form>
+                {% else %}
+                    <em>Нельзя удалить свой аккаунт</em>
+                {% endif %}
+
+            </td>
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+{% else %}
+    <p style="margin-top:20px;">Пользователей пока нет.</p>
+{% endif %}
+
+{% endblock %}

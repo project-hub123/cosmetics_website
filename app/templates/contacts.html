@@ -1,0 +1,25 @@
+{% extends style_mode == "lowvision" and "base_lowvision.html" or "base.html" %}
+
+{% block title %}Контакты{% endblock %}
+
+{% block content %}
+<h1>Контакты</h1>
+
+<div style="font-size:18px; line-height:1.7; margin-top:20px;">
+    <p><strong>Производитель косметики «CosmeticsPro»</strong></p>
+
+    <p>Телефон: +7 (999) 123-45-67</p>
+    <p>Email: support@cosmeticspro.ru</p>
+    <p>Адрес: г. Москва, ул. Бьюти, 15</p>
+
+    <h3 style="margin-top:30px;">Обратная связь</h3>
+
+    <form method="POST" action="{{ url_for('messages.send_message') }}">
+        <input type="text" name="name" placeholder="Ваше имя" required>
+        <input type="email" name="email" placeholder="Ваш email" required>
+        <textarea name="message" placeholder="Ваше сообщение" required></textarea>
+        <button type="submit" class="btn">Отправить</button>
+    </form>
+</div>
+
+{% endblock %}

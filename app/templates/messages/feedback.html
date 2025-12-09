@@ -1,0 +1,50 @@
+{% extends style_mode == "lowvision" and "base_lowvision.html" or "base.html" %}
+
+{% block title %}Обратная связь{% endblock %}
+
+{% block content %}
+
+<h1>Связаться с нами</h1>
+
+<p style="margin-top:10px; font-size:18px;">
+    Если у вас есть вопросы, предложения или пожелания — заполните форму ниже.
+    Мы ответим на указанный вами email.
+</p>
+
+<div style="max-width:600px; margin-top:30px;">
+
+    <form method="POST" action="{{ url_for('messages.send_message') }}">
+        {{ form.hidden_tag() }}
+
+        <!-- ИМЯ -->
+        <label for="sender_name">Ваше имя:</label>
+        {{ form.sender_name(class="input-field", placeholder="Введите ваше имя") }}
+
+        {% for error in form.sender_name.errors %}
+            <div class="flash flash-danger">{{ error }}</div>
+        {% endfor %}
+
+        <!-- EMAIL -->
+        <label for="sender_email">Email:</label>
+        {{ form.sender_email(class="input-field", placeholder="Ваш email") }}
+
+        {% for error in form.sender_email.errors %}
+            <div class="flash flash-danger">{{ error }}</div>
+        {% endfor %}
+
+        <!-- СООБЩЕНИЕ -->
+        <label for="content">Сообщение:</label>
+        {{ form.content(class="input-field", placeholder="Введите текст сообщения") }}
+
+        {% for error in form.content.errors %}
+            <div class="flash flash-danger">{{ error }}</div>
+        {% endfor %}
+
+        <button type="submit" class="btn" style="margin-top:15px; width:100%;">
+            Отправить сообщение
+        </button>
+    </form>
+
+</div>
+
+{% endblock %}

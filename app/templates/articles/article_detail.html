@@ -1,0 +1,55 @@
+{% extends style_mode == "lowvision" and "base_lowvision.html" or "base.html" %}
+
+{% block title %}{{ article.title }} — Статья{% endblock %}
+
+{% block content %}
+
+<h1>{{ article.title }}</h1>
+
+<p style="margin-top:10px; color:#777;">
+    Опубликовано: {{ article.created_at.strftime("%d.%m.%Y") }}
+    {% if article.author %}
+        • Автор: {{ article.author.username }}
+    {% endif %}
+</p>
+
+<!-- Изображение статьи -->
+{% if article.image %}
+    <img src="{{ url_for('static', filename='img/articles/' ~ article.image) }}"
+         alt="Изображение статьи"
+         style="max-width:100%; border-radius:10px; margin:20px 0;">
+{% endif %}
+
+<!-- Текст статьи -->
+<div style="font-size:18px; margin-top:10px; line-height:1.7;">
+    {{ article.content | safe }}
+</div>
+
+
+<!-- =====================================================
+     КНОПКИ ДЛЯ СОТРУДНИКА/АДМИНА
+====================================================== -->
+{% if current_user.is_authenticated and current_user.role in ["employee", "admin"] %}
+    <div style="margin-top:30px;">
+        <a href="{{ url_for('articles.edit_article', article_id=article.id) }}" class="btn">Редактировать</a>
+
+        <form action="{{ url_for('articles.delete_article', article_id=article.id) }}"
+              method="POST"
+              style="display:inline-block;"
+              onsubmit="return confirm('Удалить статью?');">
+            <button class="btn" style="background:#cc3333;">Удалить</button>
+        </form>
+    </div>
+{% endif %}
+
+
+<!-- =====================================================
+     КНОПКА НАЗАД К РАЗДЕЛУ
+====================================================== -->
+<div style="margin-top:40px;">
+    <a href="{{ url_for('articles.category', slug=article.category.slug) }}" class="btn">
+        ← Вернуться в раздел «{{ article.category.name }}»
+    </a>
+</div>
+
+{% endblock %}

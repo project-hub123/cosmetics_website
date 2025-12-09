@@ -1,0 +1,32 @@
+{% extends style_mode == "lowvision" and "base_lowvision.html" or "base.html" %}
+
+{% block title %}Ошибка 404 — Страница не найдена{% endblock %}
+
+{% block content %}
+
+<div style="text-align:center; margin-top:40px;">
+
+    <h1 style="font-size:40px; margin-bottom:20px;">
+        Ошибка 404
+    </h1>
+
+    <p style="font-size:20px; margin-bottom:25px;">
+        К сожалению, запрашиваемая страница не найдена.
+        Возможно, она была удалена или перемещена.
+    </p>
+
+    {% if style_mode == "normal" %}
+        <img src="{{ url_for('static', filename='img/404.png') }}"
+             alt="404"
+             style="max-width:350px; margin-bottom:25px;">
+    {% endif %}
+
+    <div>
+        <a href="{{ url_for('main.index') }}" class="btn" style="font-size:20px;">
+            На главную
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

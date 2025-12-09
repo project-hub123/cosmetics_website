@@ -1,0 +1,59 @@
+{% extends style_mode == "lowvision" and "base_lowvision.html" or "base.html" %}
+
+{% block title %}Входящие сообщения{% endblock %}
+
+{% block content %}
+
+<h1>Входящие сообщения</h1>
+
+<p style="margin-top:10px; font-size:18px;">
+    Здесь отображаются все сообщения, отправленные пользователями через форму обратной связи.
+</p>
+
+<!-- =====================================================
+     СПИСОК СООБЩЕНИЙ
+====================================================== -->
+{% if messages %}
+    <div style="margin-top:25px;">
+
+        {% for msg in messages %}
+            <div class="card" style="margin-bottom:20px;">
+
+                <!-- Заголовок сообщения -->
+                <h2 style="margin:0;">Сообщение №{{ msg.id }}</h2>
+
+                <p style="margin-top:8px;">
+                    <strong>Имя отправителя:</strong> {{ msg.sender_name }}<br>
+                    <strong>Email:</strong> {{ msg.sender_email }}<br>
+                    <strong>Дата:</strong> {{ msg.created_at.strftime("%d.%m.%Y %H:%M") }}
+                </p>
+
+                <p style="margin-top:12px; line-height:1.7;">
+                    {{ msg.content[:200] }}...
+                </p>
+
+                <div style="margin-top:12px;">
+                    <a href="{{ url_for('messages.view_message', msg_id=msg.id) }}" class="btn">
+                        Открыть
+                    </a>
+
+                    <form action="{{ url_for('messages.delete_message', msg_id=msg.id) }}"
+                          method="POST"
+                          style="display:inline-block;"
+                          onsubmit="return confirm('Удалить сообщение?');">
+                        <button class="btn" style="background:#cc3333;">
+                            Удалить
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        {% endfor %}
+
+    </div>
+
+{% else %}
+    <p style="margin-top:20px;">Входящие сообщения отсутствуют.</p>
+{% endif %}
+
+{% endblock %}

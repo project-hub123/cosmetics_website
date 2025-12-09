@@ -1,0 +1,48 @@
+{% extends style_mode == "lowvision" and "base_lowvision.html" or "base.html" %}
+
+{% block title %}Уход за волосами — Статьи{% endblock %}
+
+{% block content %}
+
+<h1>Уход за волосами</h1>
+
+<p style="margin-top:15px; font-size:18px;">
+    В этом разделе собраны материалы, посвящённые профессиональному уходу за волосами.
+    Здесь вы найдёте рекомендации по питанию, восстановлению, защите волос, подбору шампуней, масок,
+    масел и других средств, а также советы по уходу за волосами разных типов.
+</p>
+
+<!-- =====================================================
+     ВЫВОД СТАТЕЙ КАТЕГОРИИ (динамические данные)
+====================================================== -->
+{% if articles %}
+    <div style="display:flex; flex-wrap:wrap; gap:20px; margin-top:25px;">
+
+        {% for article in articles %}
+            <div class="card" style="width:31%;">
+                
+                {% if article.image %}
+                    <img src="{{ url_for('static', filename='img/articles/' ~ article.image) }}" alt="">
+                {% endif %}
+
+                <div class="card-title">
+                    {{ article.title }}
+                </div>
+
+                <p style="margin:10px 0;">
+                    {{ article.content[:150] }}...
+                </p>
+
+                <a class="btn" href="{{ url_for('articles.article_detail', article_id=article.id) }}">
+                    Читать далее
+                </a>
+            </div>
+        {% endfor %}
+
+    </div>
+
+{% else %}
+    <p style="margin-top:25px;">Статьи в этом разделе пока отсутствуют.</p>
+{% endif %}
+
+{% endblock %}

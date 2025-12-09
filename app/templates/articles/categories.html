@@ -1,0 +1,18 @@
+{% extends style_mode == "lowvision" and "base_lowvision.html" or "base.html" %}
+
+{% block title %}Категории статей{% endblock %}
+
+{% block content %}
+<h1>Разделы статей</h1>
+
+<div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+    {% for category in categories %}
+        <a class="btn" 
+           href="{{ url_for('articles.category', slug=category.slug) }}"
+           style="max-width: 400px;">
+           {{ category.name }}
+        </a>
+    {% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends style_mode == "lowvision" and "base_lowvision.html" or "base.html" %}
+
+{% block title %}Карта сайта{% endblock %}
+
+{% block content %}
+
+<h1>Карта сайта</h1>
+
+<p style="margin-top:15px;">
+    Здесь представлена структура всех страниц сайта для удобной навигации.
+</p>
+
+<!-- =====================================================
+     ОСНОВНЫЕ РАЗДЕЛЫ
+====================================================== -->
+<h2 style="margin-top:30px;">Основные страницы</h2>
+<ul style="margin-top:10px; line-height:1.8;">
+    <li><a href="{{ url_for('main.index') }}">Главная</a></li>
+    <li><a href="{{ url_for('main.contacts') }}">Контакты</a></li>
+    <li><a href="{{ url_for('news.news_list') }}">Новости</a></li>
+    <li><a href="{{ url_for('articles.categories') }}">Статьи</a></li>
+</ul>
+
+
+<!-- =====================================================
+     РАЗДЕЛЫ СТАТЕЙ
+====================================================== -->
+<h2 style="margin-top:35px;">Разделы статей</h2>
+
+{% if categories %}
+    <ul style="margin-top:10px; line-height:1.8;">
+        {% for category in categories %}
+        <li>
+            <a href="{{ url_for('articles.category', slug=category.slug) }}">
+                {{ category.name }}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Пока нет категорий.</p>
+{% endif %}
+
+
+<!-- =====================================================
+     ПОЛЬЗОВАТЕЛЮ
+====================================================== -->
+<h2 style="margin-top:35px;">Личный кабинет</h2>
+<ul style="margin-top:10px; line-height:1.8;">
+    {% if current_user.is_authenticated %}
+        <li><a href="{{ url_for('auth.logout') }}">Выход</a></li>
+        <li><a href="{{ url_for('messages.send_message') }}">Обратная связь</a></li>
+
+        {% if current_user.role in ["employee", "admin"] %}
+            <li><a href="{{ url_for('admin.users_list') }}">Управление пользователями</a></li>
+            <li><a href="{{ url_for('news.add_news') }}">Добавить новость</a></li>
+            <li><a href="{{ url_for('articles.add_article') }}">Добавить статью</a></li>
+            <li><a href="{{ url_for('messages.inbox') }}">Входящие сообщения</a></li>
+        {% endif %}
+
+    {% else %}
+        <li><a href="{{ url_for('auth.login') }}">Вход</a></li>
+        <li><a href="{{ url_for('auth.register') }}">Регистрация</a></li>
+    {% endif %}
+</ul>
+
+
+<!-- =====================================================
+     ТЕХНИЧЕСКИЕ СТРАНИЦЫ
+====================================================== -->
+<h2 style="margin-top:35px;">Технические страницы</h2>
+<ul style="margin-top:10px; line-height:1.8;">
+    <li><a href="{{ url_for('main.sitemap') }}">Карта сайта</a></li>
+    <li><a href="/nonexistent-page-example">Страница 404</a> <small>(для проверки)</small></li>
+</ul>
+
+
+{% endblock %}

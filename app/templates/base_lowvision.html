@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Версия для слабовидящих{% endblock %}</title>
+
+    <!-- Сброс -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reset.css') }}">
+
+    <!-- Основной стиль для слабовидящих -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/lowvision.css') }}">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+
+<body>
+
+<!-- ====================== ШАПКА ====================== -->
+<header>
+    <div class="container">
+
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="font-size:30px; font-weight:bold;">
+                <a href="{{ url_for('main.index') }}" style="text-decoration:none; color:#000;">
+                    🌼 Версия для слабовидящих
+                </a>
+            </div>
+
+            <button id="toggle-style" class="btn" style="font-size:20px;">
+                Обычная версия
+            </button>
+        </div>
+
+        <!-- Навигация -->
+        <nav style="margin-top:15px; font-size:24px;">
+            <a href="{{ url_for('main.index') }}">Главная</a>
+            <a href="{{ url_for('articles.categories') }}">Статьи</a>
+            <a href="{{ url_for('news.news_list') }}">Новости</a>
+            <a href="{{ url_for('main.contacts') }}">Контакты</a>
+            <a href="{{ url_for('main.sitemap') }}">Карта сайта</a>
+
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('auth.logout') }}">Выход</a>
+                <span style="font-weight:bold;">{{ current_user.username }}</span>
+
+                {% if current_user.role in ["employee", "admin"] %}
+                    <a href="{{ url_for('admin.users_list') }}">Админ-панель</a>
+                {% endif %}
+
+            {% else %}
+                <a href="{{ url_for('auth.login') }}">Вход</a>
+                <a href="{{ url_for('auth.register') }}">Регистрация</a>
+            {% endif %}
+        </nav>
+
+    </div>
+</header>
+
+
+<!-- ====================== FLASH-СООБЩЕНИЯ ====================== -->
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            {% for category, msg in messages %}
+                <div class="flash flash-{{ category }}" style="font-size:22px;">
+                    {{ msg }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+
+
+<!-- ====================== ОСНОВНОЙ КОНТЕНТ ====================== -->
+<div class="container" style="margin-top:25px;">
+    {% block content %}{% endblock %}
+</div>
+
+
+<!-- ====================== ПОДВАЛ ====================== -->
+<footer>
+    <div class="container" style="font-size:20px;">
+        © {{ current_year }} Косметическая компания — версия для слабовидящих
+    </div>
+</footer>
+
+
+<!-- ====================== JS ====================== -->
+<script src="{{ url_for('static', filename='js/toggle_style.js') }}"></script>
+
+</body>
+</html>

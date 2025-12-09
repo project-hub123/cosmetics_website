@@ -1,0 +1,60 @@
+{% extends style_mode == "lowvision" and "base_lowvision.html" or "base.html" %}
+
+{% block title %}Создать пользователя{% endblock %}
+
+{% block content %}
+
+<h1>Создание нового пользователя</h1>
+
+<p style="margin-top:10px; font-size:18px;">
+    Здесь вы можете создать учетную запись для нового пользователя, сотрудника или администратора.
+</p>
+
+<div style="max-width:600px; margin-top:25px;">
+
+    <form method="POST" action="{{ url_for('admin.create_user') }}">
+        {{ form.hidden_tag() }}
+
+        <!-- ЛОГИН -->
+        <label for="username">Логин:</label>
+        {{ form.username(class="input-field", placeholder="Введите логин") }}
+        {% for error in form.username.errors %}
+            <div class="flash flash-danger">{{ error }}</div>
+        {% endfor %}
+
+        <!-- EMAIL -->
+        <label for="email">Email:</label>
+        {{ form.email(class="input-field", placeholder="Введите email") }}
+        {% for error in form.email.errors %}
+            <div class="flash flash-danger">{{ error }}</div>
+        {% endfor %}
+
+        <!-- ПАРОЛЬ -->
+        <label for="password">Пароль:</label>
+        {{ form.password(class="input-field", placeholder="Введите пароль") }}
+        {% for error in form.password.errors %}
+            <div class="flash flash-danger">{{ error }}</div>
+        {% endfor %}
+
+        <!-- ПОДТВЕРЖДЕНИЕ ПАРОЛЯ -->
+        <label for="confirm">Повторите пароль:</label>
+        {{ form.confirm(class="input-field", placeholder="Повторите пароль") }}
+        {% for error in form.confirm.errors %}
+            <div class="flash flash-danger">{{ error }}</div>
+        {% endfor %}
+
+        <!-- РОЛЬ -->
+        <label for="role">Роль:</label>
+        {{ form.role(class="input-field") }}
+        {% for error in form.role.errors %}
+            <div class="flash flash-danger">{{ error }}</div>
+        {% endfor %}
+
+        <button type="submit" class="btn" style="margin-top:20px; width:100%;">
+            Создать пользователя
+        </button>
+    </form>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends style_mode == "lowvision" and "base_lowvision.html" or "base.html" %}
+
+{% block title %}Вход в личный кабинет{% endblock %}
+
+{% block content %}
+
+<h1>Вход</h1>
+
+<div style="max-width:500px; margin-top:25px;">
+
+    <form method="POST" action="{{ url_for('auth.login') }}">
+
+        {{ form.hidden_tag() }}
+
+        <!-- ЛОГИН -->
+        <label for="username">Логин:</label>
+        {{ form.username(class="input-field", placeholder="Введите логин") }}
+
+        {% for error in form.username.errors %}
+            <div class="flash flash-danger">{{ error }}</div>
+        {% endfor %}
+
+        <!-- ПАРОЛЬ -->
+        <label for="password">Пароль:</label>
+        {{ form.password(class="input-field", placeholder="Введите пароль") }}
+
+        {% for error in form.password.errors %}
+            <div class="flash flash-danger">{{ error }}</div>
+        {% endfor %}
+
+        <button type="submit" class="btn" style="margin-top:15px; width:100%;">
+            Войти
+        </button>
+
+    </form>
+
+    <p style="margin-top:20px;">
+        Нет аккаунта?
+        <a href="{{ url_for('auth.register') }}">Зарегистрироваться</a>
+    </p>
+
+</div>
+
+{% endblock %}

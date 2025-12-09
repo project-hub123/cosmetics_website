@@ -1,0 +1,59 @@
+{% extends style_mode == "lowvision" and "base_lowvision.html" or "base.html" %}
+
+{% block title %}Новости компании{% endblock %}
+
+{% block content %}
+
+<h1>Новости компании</h1>
+
+<p style="margin-top:15px; font-size:18px;">
+    Здесь публикуются последние события, новинки продукции, обновления линейки косметики и важные объявления.
+</p>
+
+<!-- =====================================================
+     СПИСОК НОВОСТЕЙ
+====================================================== -->
+{% if news %}
+    <div style="display:flex; flex-wrap:wrap; gap:20px; margin-top:25px;">
+
+        {% for item in news %}
+            <div class="card" style="width:31%;">
+
+                {% if item.image %}
+                    <img src="{{ url_for('static', filename='img/news/' ~ item.image) }}" alt="">
+                {% endif %}
+
+                <div class="card-title">{{ item.title }}</div>
+
+                <p style="margin:10px 0; color:#555;">
+                    {{ item.created_at.strftime("%d.%m.%Y") }}
+                </p>
+
+                <p>
+                    {{ item.content[:150] }}...
+                </p>
+
+                <a class="btn" href="{{ url_for('news.news_detail', news_id=item.id) }}">
+                    Читать далее
+                </a>
+
+            </div>
+        {% endfor %}
+
+    </div>
+
+{% else %}
+    <p style="margin-top:20px;">Новостей пока нет.</p>
+{% endif %}
+
+
+<!-- =====================================================
+     КНОПКА "ДОБАВИТЬ НОВОСТЬ" ДЛЯ СОТРУДНИКОВ
+====================================================== -->
+{% if current_user.is_authenticated and current_user.role in ["employee", "admin"] %}
+    <div style="margin-top:35px;">
+        <a class="btn" href="{{ url_for('news.add_news') }}">Добавить новость</a>
+    </div>
+{% endif %}
+
+{% endblock %}

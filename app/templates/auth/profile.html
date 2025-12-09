@@ -1,0 +1,52 @@
+{% extends style_mode == "lowvision" and "base_lowvision.html" or "base.html" %}
+
+{% block title %}Профиль пользователя{% endblock %}
+
+{% block content %}
+
+<h1>Профиль пользователя</h1>
+
+<div style="max-width:600px; margin-top:25px; padding:20px;" class="card">
+
+    <p style="font-size:20px; margin-bottom:12px;">
+        <strong>Логин:</strong> {{ current_user.username }}
+    </p>
+
+    <p style="font-size:20px; margin-bottom:12px;">
+        <strong>Email:</strong> {{ current_user.email }}
+    </p>
+
+    <p style="font-size:20px; margin-bottom:12px;">
+        <strong>Роль:</strong>
+        {% if current_user.role == "admin" %}
+            Администратор
+        {% elif current_user.role == "employee" %}
+            Сотрудник
+        {% else %}
+            Пользователь
+        {% endif %}
+    </p>
+
+    <hr style="margin:20px 0;">
+
+    <!-- Дополнительные функции для сотрудников и администраторов -->
+    {% if current_user.role in ["employee", "admin"] %}
+        <h2>Панель сотрудника</h2>
+
+        <ul style="margin-top:15px; line-height:1.8;">
+            <li><a href="{{ url_for('admin.users_list') }}">Управление пользователями</a></li>
+            <li><a href="{{ url_for('articles.add_article') }}">Добавить статью</a></li>
+            <li><a href="{{ url_for('news.add_news') }}">Добавить новость</a></li>
+            <li><a href="{{ url_for('messages.inbox') }}">Входящие сообщения</a></li>
+        </ul>
+
+        <hr style="margin:20px 0;">
+    {% endif %}
+
+    <a href="{{ url_for('auth.logout') }}" class="btn" style="background:#cc3333;">
+        Выйти из аккаунта
+    </a>
+
+</div>
+
+{% endblock %}

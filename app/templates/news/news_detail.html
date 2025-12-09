@@ -1,0 +1,61 @@
+{% extends style_mode == "lowvision" and "base_lowvision.html" or "base.html" %}
+
+{% block title %}{{ news_item.title }} — Новость{% endblock %}
+
+{% block content %}
+
+<h1>{{ news_item.title }}</h1>
+
+<p style="margin-top:10px; color:#777;">
+    Опубликовано: {{ news_item.created_at.strftime("%d.%m.%Y") }}
+    {% if news_item.author %}
+        • Автор: {{ news_item.author.username }}
+    {% endif %}
+</p>
+
+<!-- Изображение новости -->
+{% if news_item.image %}
+    <img src="{{ url_for('static', filename='img/news/' ~ news_item.image) }}"
+         alt="Изображение новости"
+         style="max-width:100%; border-radius:10px; margin:20px 0;">
+{% endif %}
+
+<!-- Текст новости -->
+<div style="font-size:18px; margin-top:10px; line-height:1.7;">
+    {{ news_item.content | safe }}
+</div>
+
+
+<!-- =====================================================
+     КНОПКИ ДЛЯ СОТРУДНИКА / АДМИНА
+====================================================== -->
+{% if current_user.is_authenticated and current_user.role in ["employee", "admin"] %}
+    <div style="margin-top:30px;">
+
+        <a href="{{ url_for('news.edit_news', news_id=news_item.id) }}" class="btn">
+            Редактировать
+        </a>
+
+        <form action="{{ url_for('news.delete_news', news_id=news_item.id) }}"
+              method="POST"
+              style="display:inline-block;"
+              onsubmit="return confirm('Удалить новость?');">
+            <button class="btn" style="background:#cc3333;">
+                Удалить
+            </button>
+        </form>
+
+    </div>
+{% endif %}
+
+
+<!-- =====================================================
+     КНОПКА "НАЗАД К НОВОСТЯМ"
+====================================================== -->
+<div style="margin-top:40px;">
+    <a href="{{ url_for('news.news_list') }}" class="btn">
+        ← Вернуться к новостям
+    </a>
+</div>
+
+{% endblock %}
