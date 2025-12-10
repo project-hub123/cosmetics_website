@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
-from datetime import timedelta
+from datetime import timedelta, datetime
 import os
 
 db = SQLAlchemy()
@@ -39,24 +39,26 @@ def create_app():
         return User.query.get(int(user_id))
 
     # ---------------------------------------------------------
-    # 🔧 ПЕРЕДАЧА СТИЛЯ ВО ВСЕ ШАБЛОНЫ
+    # 🔧 ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ДЛЯ ВСЕХ ШАБЛОНОВ
     # ---------------------------------------------------------
+    from app.forms import SearchForm
+
     @app.context_processor
-    def inject_style_mode():
-        """Передаёт в шаблоны текущий выбранный стиль"""
-        mode = session.get("style_mode", "normal")
-        return {"style_mode": mode}
+    def inject_globals():
+        """Глобально передаём SearchForm и текущий год во все шаблоны."""
+        return {
+            "SearchForm": SearchForm,        # ← исправляет ошибку SearchForm undefined
+            "current_year": datetime.utcnow().year,
+            "style_mode": session.get("style_mode", "normal")
+        }
 
     # ---------------------------------------------------------
     # 🔧 ПЕРЕКЛЮЧЕНИЕ СТИЛЯ (ОБЫЧНЫЙ ↔ СЛАБОВИДЯЩИЕ)
     # ---------------------------------------------------------
     @app.route("/toggle-style")
     def toggle_style():
-        """Переключение темы сайта"""
         current = session.get("style_mode", "normal")
         session["style_mode"] = "lowvision" if current == "normal" else "normal"
-
-        # Важно: ДОЛЖЕН БЫТЬ redirect!
         return redirect(request.referrer or url_for("main.index"))
 
     # ---------------------------------------------------------
