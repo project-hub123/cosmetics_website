@@ -37,9 +37,9 @@
         {% endfor %}
 
         <!-- ПОДТВЕРЖДЕНИЕ ПАРОЛЯ -->
-        <label for="confirm_password">Повторите пароль:</label>
+        <label for="confirm">Повторите пароль:</label>
         {{ form.confirm(class="input-field", placeholder="Повторите пароль") }}
-        {% for error in form.confirm_password.errors %}
+        {% for error in form.confirm.errors %}
             <div class="flash flash-danger">{{ error }}</div>
         {% endfor %}
 
