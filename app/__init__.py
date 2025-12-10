@@ -39,21 +39,26 @@ def create_app():
         return User.query.get(int(user_id))
 
     # ---------------------------------------------------------
-    # 🔧 ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ДЛЯ ВСЕХ ШАБЛОНОВ
+    # 🔧 ГЛОБАЛЬНЫЕ ДАННЫЕ ДЛЯ ВСЕХ ШАБЛОНОВ
     # ---------------------------------------------------------
     from app.forms import SearchForm
 
     @app.context_processor
     def inject_globals():
-        """Глобально передаём SearchForm и текущий год во все шаблоны."""
+        """
+        Передаём в шаблоны:
+        - style_mode
+        - поисковую форму (экземпляр!)
+        - год
+        """
         return {
-            "SearchForm": SearchForm,        # ← исправляет ошибку SearchForm undefined
-            "current_year": datetime.utcnow().year,
-            "style_mode": session.get("style_mode", "normal")
+            "style_mode": session.get("style_mode", "normal"),
+            "search_form": SearchForm(),          # ← Теперь работает!
+            "current_year": datetime.utcnow().year
         }
 
     # ---------------------------------------------------------
-    # 🔧 ПЕРЕКЛЮЧЕНИЕ СТИЛЯ (ОБЫЧНЫЙ ↔ СЛАБОВИДЯЩИЕ)
+    # 🔧 ПЕРЕКЛЮЧЕНИЕ СТИЛЯ
     # ---------------------------------------------------------
     @app.route("/toggle-style")
     def toggle_style():
@@ -79,14 +84,14 @@ def create_app():
     app.register_blueprint(admin_bp, url_prefix="/admin")
 
     # ---------------------------------------------------------
-    # 🔧 ГЛОБАЛЬНАЯ СТРАНИЦА 404
+    # 🔧 ГЛОБАЛЬНАЯ 404
     # ---------------------------------------------------------
     @app.errorhandler(404)
     def page_not_found(e):
         return render_template("404.html"), 404
 
     # ---------------------------------------------------------
-    # 🔧 АВТОМАТИЧЕСКОЕ СОЗДАНИЕ ПАПОК КОНТЕНТА
+    # 🔧 СОЗДАНИЕ ПАПОК (если их нет)
     # ---------------------------------------------------------
     content_dirs = [
         "static/img/banners",
@@ -94,7 +99,6 @@ def create_app():
         "static/img/news"
     ]
     for d in content_dirs:
-        full = os.path.join(app.root_path, d)
-        os.makedirs(full, exist_ok=True)
+        os.makedirs(os.path.join(app.root_path, d), exist_ok=True)
 
     return app
