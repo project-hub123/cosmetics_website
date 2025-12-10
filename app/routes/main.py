@@ -30,29 +30,33 @@ def index():
         latest_articles=latest_articles,
         latest_news=latest_news,
         banners=banners,
-        search_form=SearchForm()   # ← важно!
+        search_form=SearchForm()
     )
 
 
 # ============================================================
 #                       ПОИСК ПО САЙТУ
 # ============================================================
-@main_bp.route("/search", methods=["POST"])
+@main_bp.route("/search", methods=["GET", "POST"])
 def search():
     form = SearchForm()
 
-    # Форма отправляется только POST, как в base.html
-    if not form.validate_on_submit():
-        flash("Введите поисковый запрос.", "warning")
-        return redirect(url_for("main.index"))
+    # Если форма отправлена через POST
+    if request.method == "POST":
+        if not form.validate_on_submit():
+            flash("Введите поисковый запрос.", "warning")
+            return redirect(url_for("main.index"))
+        query = form.query.data.strip()
 
-    query = form.query.data.strip()
+    # Если форма отправлена через GET (из base.html)
+    else:
+        query = request.args.get("query", "").strip()
 
     if not query:
         flash("Введите текст для поиска.", "warning")
         return redirect(url_for("main.index"))
 
-    # Поиск в статьях и новостях
+    # Поиск в статьях
     articles = Article.query.filter(
         or_(
             Article.title.ilike(f"%{query}%"),
@@ -60,6 +64,7 @@ def search():
         )
     ).all()
 
+    # Поиск в новостях
     news = News.query.filter(
         or_(
             News.title.ilike(f"%{query}%"),
@@ -99,7 +104,7 @@ def contacts():
 
 
 # ============================================================
-#                ПЕРЕКЛЮЧЕНИЕ СТИЛЯ (НОРМАЛ / LOWVISION)
+#                ПЕРЕКЛЮЧЕНИЕ СТИЛЯ
 # ============================================================
 @main_bp.route("/style/<mode>")
 def change_style(mode):
