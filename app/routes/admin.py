@@ -15,7 +15,7 @@ admin_bp = Blueprint("admin", __name__)
 
 
 # ============================================================
-#                СПИСОК ВСЕХ ПОЛЬЗОВАТЕЛЕЙ
+#                СПИСОК ПОЛЬЗОВАТЕЛЕЙ
 # ============================================================
 @admin_bp.route("/users")
 @login_required
@@ -26,7 +26,7 @@ def users_list():
 
 
 # ============================================================
-#              СОЗДАНИЕ ПОЛЬЗОВАТЕЛЯ (СОТРУДНИКОМ)
+#           СОЗДАНИЕ ПОЛЬЗОВАТЕЛЯ (админ / сотрудник)
 # ============================================================
 @admin_bp.route("/create_user", methods=["GET", "POST"])
 @login_required
@@ -34,27 +34,32 @@ def users_list():
 def create_user():
     form = AdminCreateUserForm()
 
-    # если роль employee → нельзя создавать админов
+    # Сотрудник → нельзя создавать админов
     if current_user.role == "employee":
-        # убираем возможность выбрать admin
         form.role.choices = [
             ("user", "Пользователь"),
             ("employee", "Сотрудник")
+        ]
+    else:
+        form.role.choices = [
+            ("user", "Пользователь"),
+            ("employee", "Сотрудник"),
+            ("admin", "Администратор")
         ]
 
     if form.validate_on_submit():
 
         # Проверка логина
         if User.query.filter_by(username=form.username.data).first():
-            flash("Логин уже существует.", "danger")
+            flash("Пользователь с таким логином уже существует.", "danger")
             return redirect(url_for("admin.create_user"))
 
         # Проверка email
         if User.query.filter_by(email=form.email.data).first():
-            flash("Email уже зарегистрирован.", "danger")
+            flash("Пользователь с таким email уже существует.", "danger")
             return redirect(url_for("admin.create_user"))
 
-        # Создание пользователя
+        # Создание нового пользователя
         new_user = User(
             username=form.username.data,
             email=form.email.data,
@@ -72,34 +77,32 @@ def create_user():
 
 
 # ============================================================
-#                     ИЗМЕНЕНИЕ РОЛИ ПОЛЬЗОВАТЕЛЯ
+#                 ИЗМЕНЕНИЕ РОЛИ ПОЛЬЗОВАТЕЛЯ
 # ============================================================
 @admin_bp.route("/change_role/<int:user_id>", methods=["POST"])
 @login_required
 @role_required("admin")
 def change_role(user_id):
     user = User.query.get_or_404(user_id)
-
     new_role = request.form.get("role")
 
     if new_role not in ("user", "employee", "admin"):
-        flash("Некорректная роль.", "danger")
+        flash("Некорректная роль!", "danger")
         return redirect(url_for("admin.users_list"))
 
-    # защита: нельзя менять роль у самого себя
     if user.id == current_user.id:
-        flash("Нельзя изменить собственную роль.", "warning")
+        flash("Вы не можете изменить свою собственную роль.", "warning")
         return redirect(url_for("admin.users_list"))
 
     user.role = new_role
     db.session.commit()
 
-    flash("Роль пользователя изменена!", "success")
+    flash("Роль пользователя успешно обновлена.", "success")
     return redirect(url_for("admin.users_list"))
 
 
 # ============================================================
-#                    УДАЛЕНИЕ ПОЛЬЗОВАТЕЛЯ
+#                     УДАЛЕНИЕ ПОЛЬЗОВАТЕЛЯ
 # ============================================================
 @admin_bp.route("/delete_user/<int:user_id>", methods=["POST"])
 @login_required
@@ -107,9 +110,8 @@ def change_role(user_id):
 def delete_user(user_id):
     user = User.query.get_or_404(user_id)
 
-    # защита: админ не может удалить сам себя
     if user.id == current_user.id:
-        flash("Нельзя удалить собственную учетную запись.", "warning")
+        flash("Вы не можете удалить собственный аккаунт.", "warning")
         return redirect(url_for("admin.users_list"))
 
     db.session.delete(user)

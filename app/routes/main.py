@@ -20,55 +20,39 @@ main_bp = Blueprint("main", __name__)
 # ============================================================
 @main_bp.route("/")
 def index():
-    # последние статьи (3 шт.)
     latest_articles = Article.query.order_by(Article.created_at.desc()).limit(3).all()
-
-    # последние новости (3 шт.)
     latest_news = News.query.order_by(News.created_at.desc()).limit(3).all()
 
-    # баннеры — просто изображения из папки
-    banners = [
-        "banner1.jpg",
-        "banner2.jpg",
-        "banner3.jpg"
-    ]
-
-    search_form = SearchForm()
+    banners = ["banner1.jpg", "banner2.jpg", "banner3.jpg"]
 
     return render_template(
         "index.html",
         latest_articles=latest_articles,
         latest_news=latest_news,
         banners=banners,
-        search_form=search_form
+        search_form=SearchForm()   # ← важно!
     )
 
 
 # ============================================================
 #                       ПОИСК ПО САЙТУ
 # ============================================================
-@main_bp.route("/search", methods=["GET", "POST"])
+@main_bp.route("/search", methods=["POST"])
 def search():
     form = SearchForm()
 
-    # 1) Если запрос пришёл методом POST (форма на главной)
-    if request.method == "POST" and form.validate_on_submit():
-        query = form.query.data.strip()
-
-        if not query:
-            flash("Введите поисковый запрос.", "warning")
-            return redirect(url_for("main.index"))
-
-    # 2) Если пользователь перешёл методом GET
-    elif request.method == "GET":
-        query = request.args.get("query", "").strip()
-
-        if not query:
-            return redirect(url_for("main.index"))
-    else:
+    # Форма отправляется только POST, как в base.html
+    if not form.validate_on_submit():
+        flash("Введите поисковый запрос.", "warning")
         return redirect(url_for("main.index"))
 
-    # Выполняем поиск
+    query = form.query.data.strip()
+
+    if not query:
+        flash("Введите текст для поиска.", "warning")
+        return redirect(url_for("main.index"))
+
+    # Поиск в статьях и новостях
     articles = Article.query.filter(
         or_(
             Article.title.ilike(f"%{query}%"),
@@ -90,8 +74,9 @@ def search():
         news=news
     )
 
+
 # ============================================================
-#                    КАРТА САЙТА (sitemap)
+#                    КАРТА САЙТА
 # ============================================================
 @main_bp.route("/sitemap")
 def sitemap():
@@ -100,7 +85,7 @@ def sitemap():
 
 
 # ============================================================
-#                       СТРАНИЦА КОНТАКТОВ
+#                  КОНТАКТЫ
 # ============================================================
 @main_bp.route("/contacts", methods=["GET", "POST"])
 def contacts():
@@ -114,14 +99,10 @@ def contacts():
 
 
 # ============================================================
-#                  ПЕРЕКЛЮЧЕНИЕ ТЕМЫ ОФОРМЛЕНИЯ
+#                ПЕРЕКЛЮЧЕНИЕ СТИЛЯ (НОРМАЛ / LOWVISION)
 # ============================================================
 @main_bp.route("/style/<mode>")
 def change_style(mode):
-    """
-    Переключение темы оформления:
-    mode = normal | lowvision
-    """
     if mode not in ("normal", "lowvision"):
         return redirect(url_for("main.index"))
 

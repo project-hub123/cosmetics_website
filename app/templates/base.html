@@ -62,12 +62,12 @@
                 <a href="{{ url_for('auth.register') }}">Регистрация</a>
             {% endif %}
 
-            <!-- ======= ПОИСК — НА ВСЕХ СТРАНИЦАХ ======= -->
-            <form action="{{ url_for('main.search') }}" method="POST" style="display:flex; gap:5px; align-items:center;">
-                {{ SearchForm().hidden_tag() }}
-                {{ SearchForm().query(size=20, placeholder="Поиск по сайту", class="search-input") }}
-                <button type="submit" class="btn">Найти</button>
-            </form>
+<!-- ======== ПОИСК ========= -->
+<form action="{{ url_for('main.search') }}" method="POST" class="search-form">
+    {{ SearchForm().hidden_tag() }}
+    <input type="text" name="query" placeholder="Поиск..." required>
+    <button type="submit">Найти</button>
+</form>
 
         </nav>
 
