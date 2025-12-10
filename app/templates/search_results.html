@@ -1,0 +1,29 @@
+{% extends style_mode == "lowvision" and "base_lowvision.html" or "base.html" %}
+
+{% block title %}Результаты поиска{% endblock %}
+
+{% block content %}
+<h1>Результаты поиска: "{{ query }}"</h1>
+
+<h2>Статьи</h2>
+{% if articles %}
+    <ul>
+        {% for a in articles %}
+            <li><a href="{{ url_for('articles.article_detail', article_id=a.id) }}">{{ a.title }}</a></li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Нет статей по запросу.</p>
+{% endif %}
+
+<h2>Новости</h2>
+{% if news %}
+    <ul>
+        {% for n in news %}
+            <li><a href="{{ url_for('news.news_detail', news_id=n.id) }}">{{ n.title }}</a></li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Нет новостей по запросу.</p>
+{% endif %}
+{% endblock %}

@@ -34,7 +34,7 @@ def index():
 # ============================================================
 #                       ПОИСК (GET)
 # ============================================================
-@main_bp.route("/search")
+@main_bp.route("/search", methods=["GET"])
 def search():
     query = request.args.get("query", "").strip()
 
@@ -62,7 +62,6 @@ def search():
         articles=articles,
         news=news
     )
-
 
 # ============================================================
 #                       КАРТА САЙТА
