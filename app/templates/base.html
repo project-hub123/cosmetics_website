@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <title>{% block title %}Производитель косметики{% endblock %}</title>
 
-    <!-- RESET -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/reset.css') }}">
-
     {% if style_mode == "lowvision" %}
         <link rel="stylesheet" href="{{ url_for('static', filename='css/lowvision.css') }}">
     {% else %}
@@ -21,7 +19,6 @@
 <header>
     <div class="container">
 
-        <!-- Верхняя панель -->
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div class="logo">
                 <a href="{{ url_for('main.index') }}" style="text-decoration:none;">
@@ -29,20 +26,17 @@
                 </a>
             </div>
 
-            <div>
-                <button id="toggle-style" class="btn" style="font-size:14px;">
-                    {% if style_mode == "lowvision" %}
-                        Обычная версия
-                    {% else %}
-                        Версия для слабовидящих
-                    {% endif %}
-                </button>
-            </div>
+            <button id="toggle-style" class="btn" style="font-size:14px;">
+                {% if style_mode == "lowvision" %}
+                    Обычная версия
+                {% else %}
+                    Версия для слабовидящих
+                {% endif %}
+            </button>
         </div>
 
-        <!-- Навигация -->
-        <nav style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
-
+        <!-- НАВИГАЦИЯ -->
+        <nav style="display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
             <a href="{{ url_for('main.index') }}">Главная</a>
             <a href="{{ url_for('articles.categories') }}">Статьи</a>
             <a href="{{ url_for('news.news_list') }}">Новости</a>
@@ -61,39 +55,32 @@
                 <a href="{{ url_for('auth.register') }}">Регистрация</a>
             {% endif %}
 
-            <!-- ======== ИСПРАВЛЕННЫЙ ПОИСК (GET, БЕЗ SearchForm) ========= -->
-            <form action="{{ url_for('main.search') }}" method="GET" style="display:flex; gap:5px;">
+            <!-- ЕДИНСТВЕННАЯ ФОРМА ПОИСКА -->
+            <form action="{{ url_for('main.search') }}" method="GET" class="search-form">
                 <input type="text" name="query" placeholder="Поиск..." required>
                 <button type="submit">Найти</button>
             </form>
 
         </nav>
-
     </div>
 </header>
 
-
-<!-- FLASH-СООБЩЕНИЯ -->
+<!-- FLASH -->
 <div class="container">
     {% with messages = get_flashed_messages(with_categories=True) %}
         {% if messages %}
             {% for category, msg in messages %}
-                <div class="flash flash-{{ category }}">
-                    {{ msg }}
-                </div>
+                <div class="flash flash-{{ category }}">{{ msg }}</div>
             {% endfor %}
         {% endif %}
     {% endwith %}
 </div>
 
-
-<!-- ОСНОВНОЙ КОНТЕНТ -->
+<!-- CONTENT -->
 <div class="container">
     {% block content %}{% endblock %}
 </div>
 
-
-<!-- ПОДВАЛ -->
 <footer>
     <div class="container">
         © {{ current_year }} Косметическая компания • Все права защищены
