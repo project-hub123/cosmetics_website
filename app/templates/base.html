@@ -5,6 +5,7 @@
     <title>{% block title %}Производитель косметики{% endblock %}</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/reset.css') }}">
+
     {% if style_mode == "lowvision" %}
         <link rel="stylesheet" href="{{ url_for('static', filename='css/lowvision.css') }}">
     {% else %}
@@ -19,14 +20,12 @@
 <header>
     <div class="container">
 
-        <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
             <div class="logo">
-                <a href="{{ url_for('main.index') }}" style="text-decoration:none;">
-                    🌸 Косметическая компания
-                </a>
+                <a href="{{ url_for('main.index') }}">🌸 Косметическая компания</a>
             </div>
 
-            <button id="toggle-style" class="btn" style="font-size:14px;">
+            <button id="toggle-style" class="btn">
                 {% if style_mode == "lowvision" %}
                     Обычная версия
                 {% else %}
@@ -35,8 +34,7 @@
             </button>
         </div>
 
-        <!-- НАВИГАЦИЯ -->
-        <nav style="display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
+        <nav style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
             <a href="{{ url_for('main.index') }}">Главная</a>
             <a href="{{ url_for('articles.categories') }}">Статьи</a>
             <a href="{{ url_for('news.news_list') }}">Новости</a>
@@ -45,7 +43,7 @@
 
             {% if current_user.is_authenticated %}
                 <a href="{{ url_for('auth.logout') }}">Выход</a>
-                <span style="font-weight:bold;">{{ current_user.username }}</span>
+                <span><b>{{ current_user.username }}</b></span>
 
                 {% if current_user.role in ["employee", "admin"] %}
                     <a href="{{ url_for('admin.users_list') }}">Админ-панель</a>
@@ -55,17 +53,18 @@
                 <a href="{{ url_for('auth.register') }}">Регистрация</a>
             {% endif %}
 
-            <!-- ЕДИНСТВЕННАЯ ФОРМА ПОИСКА -->
+            <!-- ЕДИНСТВЕННОЕ ОКНО ПОИСКА -->
             <form action="{{ url_for('main.search') }}" method="GET" class="search-form">
                 <input type="text" name="query" placeholder="Поиск..." required>
                 <button type="submit">Найти</button>
             </form>
 
         </nav>
+
     </div>
 </header>
 
-<!-- FLASH -->
+
 <div class="container">
     {% with messages = get_flashed_messages(with_categories=True) %}
         {% if messages %}
@@ -76,7 +75,6 @@
     {% endwith %}
 </div>
 
-<!-- CONTENT -->
 <div class="container">
     {% block content %}{% endblock %}
 </div>

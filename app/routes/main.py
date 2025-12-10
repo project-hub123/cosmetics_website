@@ -8,9 +8,7 @@ from flask import (
     session
 )
 from app.models import Article, News, Category
-from app.forms import SearchForm, FeedbackForm
 from sqlalchemy import or_
-
 
 main_bp = Blueprint("main", __name__)
 
@@ -29,34 +27,21 @@ def index():
         "index.html",
         latest_articles=latest_articles,
         latest_news=latest_news,
-        banners=banners,
-        search_form=SearchForm()
+        banners=banners
     )
 
 
 # ============================================================
-#                       ПОИСК ПО САЙТУ
+#                       ПОИСК (GET)
 # ============================================================
-@main_bp.route("/search", methods=["GET", "POST"])
+@main_bp.route("/search")
 def search():
-    form = SearchForm()
-
-    # Если форма отправлена через POST
-    if request.method == "POST":
-        if not form.validate_on_submit():
-            flash("Введите поисковый запрос.", "warning")
-            return redirect(url_for("main.index"))
-        query = form.query.data.strip()
-
-    # Если форма отправлена через GET (из base.html)
-    else:
-        query = request.args.get("query", "").strip()
+    query = request.args.get("query", "").strip()
 
     if not query:
         flash("Введите текст для поиска.", "warning")
         return redirect(url_for("main.index"))
 
-    # Поиск в статьях
     articles = Article.query.filter(
         or_(
             Article.title.ilike(f"%{query}%"),
@@ -64,7 +49,6 @@ def search():
         )
     ).all()
 
-    # Поиск в новостях
     news = News.query.filter(
         or_(
             News.title.ilike(f"%{query}%"),
@@ -81,7 +65,7 @@ def search():
 
 
 # ============================================================
-#                    КАРТА САЙТА
+#                       КАРТА САЙТА
 # ============================================================
 @main_bp.route("/sitemap")
 def sitemap():
@@ -90,21 +74,22 @@ def sitemap():
 
 
 # ============================================================
-#                  КОНТАКТЫ
+#                       КОНТАКТЫ
 # ============================================================
 @main_bp.route("/contacts", methods=["GET", "POST"])
 def contacts():
+    from app.forms import FeedbackForm
     form = FeedbackForm()
 
     if form.validate_on_submit():
-        flash("Ваше сообщение отправлено. Спасибо!", "success")
+        flash("Ваше сообщение отправлено!", "success")
         return redirect(url_for("main.contacts"))
 
     return render_template("contacts.html", form=form)
 
 
 # ============================================================
-#                ПЕРЕКЛЮЧЕНИЕ СТИЛЯ
+#                       ПЕРЕКЛЮЧЕНИЕ СТИЛЯ
 # ============================================================
 @main_bp.route("/style/<mode>")
 def change_style(mode):

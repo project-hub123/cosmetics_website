@@ -54,7 +54,7 @@ class LoginForm(FlaskForm):
 
 
 # ============================================================
-#       ФОРМА СОЗДАНИЯ ПОЛЬЗОВАТЕЛЯ (СОТРУДНИКОМ/АДМИНОМ)
+#         ФОРМА СОЗДАНИЯ ПОЛЬЗОВАТЕЛЯ (АДМИН/СОТРУДНИК)
 # ============================================================
 class AdminCreateUserForm(FlaskForm):
     username = StringField(
@@ -70,6 +70,14 @@ class AdminCreateUserForm(FlaskForm):
     password = PasswordField(
         "Пароль",
         validators=[DataRequired(), Length(min=6)]
+    )
+
+    confirm = PasswordField(
+        "Повторите пароль",
+        validators=[
+            DataRequired(),
+            EqualTo("password", message="Пароли должны совпадать")
+        ]
     )
 
     role = SelectField(
@@ -110,7 +118,6 @@ class ArticleForm(FlaskForm):
     submit = SubmitField("Сохранить")
 
     def set_categories(self):
-        """Подтягивает категории из базы"""
         self.category.choices = [
             (c.id, c.name) for c in Category.query.order_by(Category.name).all()
         ]
